@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  helm-paperless-s3-backup:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2025-02-18T20:39:47.969214462Z"
+    description: A Helm chart for Kubernetes
+    digest: 212cc00b00917b59e6c2d26fcc12b5f84ade4361d3aeeeb02d64d641c1c597d3
+    name: helm-paperless-s3-backup
+    type: application
+    urls:
+    - https://github.com/pascalinthecloud/helm-paperless-s3-backup/releases/download/helm-paperless-s3-backup-0.1.0/helm-paperless-s3-backup-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-02-18T20:39:47.969220343Z"
