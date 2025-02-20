@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: {{ .Release.Name }}-config
+data:
+  backup.sh: |
+    #!/bin/sh
+    set -e
+
+    # Log functions
+    log() {
+      local level="$1"
+      local message="$2"
+      echo "[${level}] ${message}"
+    }
+    info()  { log "INFO" "$1"; }
+    warn()  { log "WARN" "$1"; }
+    error() { log "ERROR" "$1"; }
+
+    # Validate environment variables
+    : "${S3_SSE_KEY:?$(error 'Environment variable S3_SSE_KEY not set')}"
+    : "${S3_BUCKET:?$(error 'Environment variable S3_BUCKET not set')}"
+    : "${S3_ENDPOINT:?$(error 'Environment variable S3_ENDPOINT not set')}"
+    : "${S3_REGION:?$(error 'Environment variable S3_REGION not set')}"
+
+    # Get the paperless pod name & container name
+    PAPERLESS_POD=$(kubectl get pod -n $PAPERLESS_NAMESPACE -l app=$PAPERLESS_APP -o jsonpath="{.items[0].metadata.name}")
+
+    # Set the timestamp and file name
+    TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
+    FILE_NAME="paperless-backup-$TIMESTAMP"
+
+    # Import the key
+    S3_SSE_C_PATH="/mnt/backup/.sse-c.key"
+    echo $S3_SSE_KEY | xxd -r -p > $S3_SSE_C_PATH
+
+    info "Creating backup with document exporter..."
+    kubectl exec ${PAPERLESS_POD} --container $PAPERLESS_CONTAINER_NAME -- \
+      document_exporter \
+        --use-folder-prefix \
+        --zip \
+        --zip-name ${FILE_NAME} \
+        ../export
+    
+    info "Copy backup zip to this pod..."
+    kubectl cp \
+      --container="${PAPERLESS_CONTAINER_NAME}" \
+      ${PAPERLESS_POD}:../export/${FILE_NAME}.zip \
+      /mnt/backup/${FILE_NAME}.zip
+
+    info "Unzipping backup file..."
+    7z x /mnt/backup/paperless-backup-*.zip -o/mnt/backup/export/
+
+    info "Uploading backup to S3..."
+    aws s3 sync \
+      /mnt/backup/export \
+      s3://$S3_BUCKET \
+      --endpoint-url $S3_ENDPOINT \
+      --region $S3_REGION \
+      --sse-c AES256 \
+      --sse-c-key fileb://$S3_SSE_C_PATH
+    
+    info "Cleaning up backup file..."
+    kubectl exec ${PAPERLESS_POD} --container ${PAPERLESS_CONTAINER_NAME} -- \
+      bash -c "rm /usr/src/paperless/export/${FILE_NAME}.zip"
