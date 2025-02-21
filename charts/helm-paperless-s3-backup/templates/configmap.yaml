@@ -18,7 +18,6 @@ data:
     error() { log "ERROR" "$1"; }
 
     # Validate environment variables
-    : "${S3_SSE_KEY:?$(error 'Environment variable S3_SSE_KEY not set')}"
     : "${S3_BUCKET:?$(error 'Environment variable S3_BUCKET not set')}"
     : "${S3_ENDPOINT:?$(error 'Environment variable S3_ENDPOINT not set')}"
     : "${S3_REGION:?$(error 'Environment variable S3_REGION not set')}"
@@ -30,9 +29,11 @@ data:
     TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
     FILE_NAME="paperless-backup-$TIMESTAMP"
 
-    # Import the key
-    S3_SSE_C_PATH="/mnt/backup/.sse-c.key"
-    echo $S3_SSE_KEY | xxd -r -p > $S3_SSE_C_PATH
+    # Import the key if S3_SSE_KEY is set
+    if [ -n "$S3_SSE_KEY" ]; then
+        S3_SSE_C_PATH="/mnt/backup/.sse-c.key"
+        echo "$S3_SSE_KEY" | xxd -r -p > "$S3_SSE_C_PATH"
+    fi
 
     info "Creating backup with document exporter..."
     kubectl exec ${PAPERLESS_POD} --container $PAPERLESS_CONTAINER_NAME -- \
@@ -52,13 +53,14 @@ data:
     7z x /mnt/backup/paperless-backup-*.zip -o/mnt/backup/export/
 
     info "Uploading backup to S3..."
-    aws s3 sync \
-      /mnt/backup/export \
-      s3://$S3_BUCKET \
-      --endpoint-url $S3_ENDPOINT \
-      --region $S3_REGION \
-      --sse-c AES256 \
-      --sse-c-key fileb://$S3_SSE_C_PATH
+    CMD="aws s3 sync /mnt/backup/export s3://$S3_BUCKET --endpoint-url $S3_ENDPOINT --region $S3_REGION"
+
+    if [ -n "$S3_SSE_KEY" ]; then
+      CMD="$CMD --sse-c AES256 --sse-c-key fileb://$S3_SSE_C_PATH"
+      info "Using server-side encryption with customer-provided key"
+    fi
+
+    eval "$CMD"
     
     info "Cleaning up backup file..."
     kubectl exec ${PAPERLESS_POD} --container ${PAPERLESS_CONTAINER_NAME} -- \
