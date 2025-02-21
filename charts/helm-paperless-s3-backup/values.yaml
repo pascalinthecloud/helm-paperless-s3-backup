@@ -12,7 +12,7 @@ s3:
   bucket: ""
   endpoint: "" # including https://
   region: ""
-  sseKey: "" # 32 bytes hex key (openssl rand -hex 32) for server-side encryption
+  sseKey: "" # 32 bytes hex key (openssl rand -hex 32) for server-side encryption (encprytion enabled when set)
 
 paperless:
   namespace: ""
