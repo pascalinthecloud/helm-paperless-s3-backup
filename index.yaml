@@ -3,6 +3,17 @@ entries:
   helm-paperless-s3-backup:
   - apiVersion: v2
     appVersion: 1.0.7
+    created: "2025-03-03T19:09:27.848525318Z"
+    description: A Helm chart for automating Paperless NGX backups to a S3 bucket
+      in Kubernetes with optional encryption.
+    digest: a3016b0d0e27ba9cedffd872a0c423da3ca204fbe53ab58c9430f4f41b348533
+    name: helm-paperless-s3-backup
+    type: application
+    urls:
+    - https://github.com/pascalinthecloud/helm-paperless-s3-backup/releases/download/helm-paperless-s3-backup-0.4.1/helm-paperless-s3-backup-0.4.1.tgz
+    version: 0.4.1
+  - apiVersion: v2
+    appVersion: 1.0.7
     created: "2025-03-03T18:57:15.494957061Z"
     description: A Helm chart for automating Paperless NGX backups to a S3 bucket
       in Kubernetes with optional encryption.
@@ -54,4 +65,4 @@ entries:
     urls:
     - https://github.com/pascalinthecloud/helm-paperless-s3-backup/releases/download/helm-paperless-s3-backup-0.1.0/helm-paperless-s3-backup-0.1.0.tgz
     version: 0.1.0
-generated: "2025-03-03T18:57:15.49497778Z"
+generated: "2025-03-03T19:09:27.848550525Z"
