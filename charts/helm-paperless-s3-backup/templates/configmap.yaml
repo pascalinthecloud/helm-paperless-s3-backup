@@ -13,6 +13,7 @@ data:
       local message="$2"
       echo "[${level}] ${message}"
     }
+    
     info()  { log "INFO" "$1"; }
     warn()  { log "WARN" "$1"; }
     error() { log "ERROR" "$1"; }
