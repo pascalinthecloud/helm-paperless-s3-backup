@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
     name: {{ .Release.Name }}-config
+    namespace: {{ .Release.Namespace }}
 data:
   backup.sh: |
     #!/bin/sh
@@ -13,7 +14,7 @@ data:
       local message="$2"
       echo "[${level}] ${message}"
     }
-    
+
     info()  { log "INFO" "$1"; }
     warn()  { log "WARN" "$1"; }
     error() { log "ERROR" "$1"; }
