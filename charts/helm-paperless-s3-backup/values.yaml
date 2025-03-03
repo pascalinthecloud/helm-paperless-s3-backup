@@ -7,14 +7,15 @@ image:
   tag: v1.0.7
 
 s3:
-  accessKey: ""
-  secretKey: ""
-  bucket: ""
-  endpoint: "" # including https://
-  region: ""
-  sseKey: "" # 32 bytes hex key (openssl rand -hex 32) for server-side encryption (encprytion enabled when set)
+  accessKey:
+  secretKey:
+  bucket:
+  endpoint: # including https://
+  region:
+  sseKey:
+    # 32 bytes hex key (openssl rand -hex 32) for server-side encryption (encprytion enabled when set)
 
 paperless:
-  namespace: ""
-  app: "" # app label of the paperless pod
-  container_name: ""
+  namespace:
+  app: # app label of the paperless pod
+  container_name:
