@@ -7,7 +7,9 @@ This Helm chart deploys a CronJob to back up Paperless NGX documents to an S3-co
 To install with custom values:
 
 ```bash
-helm install paperless-backup ./helm-paperless-s3-backup -f values.yaml -n <NAMESPACE>
+helm repo add paperless-backup https://pascalinthecloud.github.io/helm-paperless-s3-backup/
+
+helm install paperless-backup paperless-backup paperless-backup/helm-paperless-s3-backup -f values.yaml -n <NAMESPACE>
 ```
 
 ## Configuration
@@ -17,7 +19,7 @@ helm install paperless-backup ./helm-paperless-s3-backup -f values.yaml -n <NAME
 | Key                | Default Value        | Description |
 |--------------------|---------------------|-------------|
 | `cron`            | `"0 4 * * 0"`       | Cron schedule for backups (UTC) |
-| `image.repository` | `pascaaal/docker-awscli-gpg` | Backup container image repository |
+| `image.repository` | `pascaaal/docker-awscli-kubectl-zip` | Backup container image repository |
 | `image.tag`       | `v1.0.7`            | Container image tag |
 | `s3.accessKey`    | `""`                | S3 Access Key ID |
 | `s3.secretKey`    | `""`                | S3 Secret Access Key |
@@ -35,7 +37,7 @@ helm install paperless-backup ./helm-paperless-s3-backup -f values.yaml -n <NAME
 cron: "0 3 * * *"
 
 image:
-  repository: pascaaal/docker-awscli-gpg
+  repository: pascaaal/docker-awscli-kubectl-zip
   tag: v1.0.7
 
 s3:
