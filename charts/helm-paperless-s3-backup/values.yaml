@@ -3,7 +3,7 @@ name: helm-paperless-s3-backup
 cron: "0 4 * * 0"
 
 image:
-  repository: pascaaal/docker-awscli-gpg
+  repository: pascaaal/docker-awscli-kubectl-zip
   tag: v1.0.7
 
 s3:
