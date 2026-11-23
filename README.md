@@ -27,6 +27,7 @@ helm install paperless-backup paperless-backup paperless-backup/helm-paperless-s
 | `s3.endpoint`     | `""`                | S3 endpoint including `https://` |
 | `s3.region`       | `""`                | S3 region |
 | `s3.sseKey`       | `""`                | 32-byte hex key for server-side encryption (SSE-C) |
+| `healthcheck.pingUrl` | `""`            | Optional Healthchecks ping URL: `/start` when the job starts, then success, or `/<exit code>` on failure |
 | `paperless.namespace` | `""`           | Namespace of Paperless deployment |
 | `paperless.app`   | `""`                | Label of the Paperless pod |
 | `paperless.container_name` | `""`      | Paperless container name |

@@ -19,6 +19,21 @@ data:
     warn()  { log "WARN" "$1"; }
     error() { log "ERROR" "$1"; }
 
+    # Optional Healthchecks ping: /start now, then success or /<exit code> on exit
+    hc() {
+      [ -n "${HEALTHCHECK_PING_URL:-}" ] || return 0
+      curl -fsS -m 10 --retry 3 -o /dev/null --data-raw "${2:-}" "${HEALTHCHECK_PING_URL}$1" \
+        || warn "healthcheck ping '$1' failed"
+    }
+    finish() {
+      rc=$?
+      if [ "$rc" -eq 0 ]; then hc "" "backup uploaded to s3://${S3_BUCKET:-}"
+      else hc "/$rc" "backup failed with exit code $rc, see the job logs"; fi
+      exit "$rc"
+    }
+    trap finish EXIT
+    hc /start
+
     # Validate environment variables
     : "${S3_BUCKET:?$(error 'Environment variable S3_BUCKET not set')}"
     : "${S3_ENDPOINT:?$(error 'Environment variable S3_ENDPOINT not set')}"
